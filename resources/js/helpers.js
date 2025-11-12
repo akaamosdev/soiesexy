@@ -1,4 +1,8 @@
-import { reactive } from 'vue';
+import {reactive, ref} from 'vue';
+
+const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+const addressLivraison = JSON.parse(localStorage.getItem('adresse_livraison') || {});
+const carts = ref(Array.isArray(storedCart) ? storedCart : [storedCart]);
 
 const state = reactive({
     visible: false,
@@ -27,7 +31,15 @@ export function hideToast() {
         hideTimer = null;
     }
 }
-
 export function useToastStore() {
     return state;
+}
+export function formatPrice(price) {
+   return Number(price).toLocaleString('fr-FR', { minimumFractionDigits: 0 })
+}
+export function getCart() {
+    return carts;
+}
+export function getAddressLivraison() {
+    return addressLivraison;
 }

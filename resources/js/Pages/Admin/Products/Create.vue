@@ -5,6 +5,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Checkbox from "@/Components/Checkbox.vue";
+import CheckBoxMultple from "@/Components/CheckBoxMultple.vue";
+import {watch} from "vue";
 
 const props = defineProps({
     categories: Array,
@@ -17,23 +20,11 @@ const form = useForm({
     price: '',
     category_id: '',
     description: '',
-    variants: [], // Array to hold variant data
-    images: [], // Array to hold variant data
+    taille_ids: [], // Array to hold variant data
+    color_ids: [], // Array to hold variant data
+    images: [], // Arr
 });
 
-// Function to add a new empty variant row
-const addVariantRow = () => {
-    form.variants.push({
-        taille_id: '',
-        color_id: '',
-        quantity: 0,
-    });
-};
-
-// Function to remove a variant row
-const removeVariantRow = (index) => {
-    form.variants.splice(index, 1);
-};
 
 const submit = () => {
     form.post(route('products.store'));
@@ -78,6 +69,19 @@ const submit = () => {
                                     </select>
                                     <InputError class="mt-2" :message="form.errors.category_id" />
                                 </div>
+                                <div class="">
+                                    <InputLabel for="taille_ids" value="Taille disponibles" />
+                                    <label v-for="taille in tailles" :key="taille.id">
+                                        <CheckBoxMultple v-model="form.taille_ids" :value="taille.id" class="mx-3" />{{ taille.name}}
+                                    </label>
+                                </div>
+
+                            </div>
+                            <div class="">
+                                <InputLabel for="color_ids" value="Couleurs disponibles" />
+                                <label v-for="col in colors" :key="col.id">
+                                    <CheckBoxMultple v-model="form.color_ids" :value="col.id" class="mx-3" />{{ col.name}}
+                                </label>
                             </div>
 
                             <div class="mt-4">
@@ -93,37 +97,6 @@ const submit = () => {
                                 <InputError v-if="form.errors['images.0']" class="mt-2" :message="form.errors['images.0']" />
                             </div>
 
-                            <!-- Product Variants Section -->
-                            <div class="mt-6">
-                                <h3 class="text-lg font-semibold mb-4">Product Variants</h3>
-                                <div class="space-y-4">
-                                    <div v-for="(variant, index) in form.variants" :key="index" class="flex items-end gap-4 p-4 border rounded-md bg-gray-50">
-                                        <div>
-                                            <InputLabel :for="`taille_id-${index}`" value="Size" />
-                                            <select :id="`taille_id-${index}`" v-model="variant.taille_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                                <option value="" disabled>Select size</option>
-                                                <option v-for="taille in tailles" :key="taille.id" :value="taille.id">{{ taille.name }}</option>
-                                            </select>
-                                            <InputError class="mt-2" :message="form.errors[`variants.${index}.taille_id`]"></InputError>
-                                        </div>
-                                        <div>
-                                            <InputLabel :for="`color_id-${index}`" value="Color" />
-                                            <select :id="`color_id-${index}`" v-model="variant.color_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                                <option value="" disabled>Select color</option>
-                                                <option v-for="color in colors" :key="color.id" :value="color.id">{{ color.name }}</option>
-                                            </select>
-                                            <InputError class="mt-2" :message="form.errors[`variants.${index}.color_id`]"></InputError>
-                                        </div>
-                                        <div>
-                                            <InputLabel :for="`quantity-${index}`" value="Quantity" />
-                                            <TextInput :id="`quantity-${index}`" type="number" class="mt-1 block w-full" v-model="variant.quantity" required />
-                                            <InputError class="mt-2" :message="form.errors[`variants.${index}.quantity`]"></InputError>
-                                        </div>
-                                        <button type="button" @click="removeVariantRow(index)" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Remove</button>
-                                    </div>
-                                </div>
-                                <button type="button" @click="addVariantRow" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Add Variant</button>
-                            </div>
 
                             <div class="flex items-center justify-end mt-4">
                                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">

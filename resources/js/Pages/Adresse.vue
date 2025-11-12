@@ -5,47 +5,41 @@
                 <i class="fa-solid fa-chevron-left"></i>
             </Link>
             <div class="flex justify-start w-full">
-                <h3>Lieu de livraison</h3>
+                <h3>Information de livraison</h3>
             </div>
             <Link :href="route('card')" class="px-3">
                 <i class="fa-solid fa-cart-shopping  text-md"></i>
             </Link>
 
         </div>
-        <div class="grid grid-cols-1 gap-3 p-3">
-            <div class="flex  justify-center mb-3">
-<!--               <img src="/assets/logo-1.png" alt="" class="rounded-full object-contain h-48 border border-red-200">-->
-                <div class=" mt-5">
-                    <i class="fa-solid fa-2x fa-location-dot"></i>
+        <form @submit.prevent="storeAdresse">
+            <div class="grid grid-cols-1 gap-3 p-3">
+                <div class="flex  justify-center mb-3">
+                    <img src="/assets/img/delivery.avif" alt="" class="rounded-full object-contain h-48 border border-red-200">
+<!--                    <div class=" mt-5 bg-red-50 p-3 rounded-full">-->
+<!--                        <i class="fa-solid fa-2x fa-location-dot"></i>-->
+<!--                    </div>-->
                 </div>
-            </div>
-            <div class="grid-cols-1 grid">
-                <label class="font-semibold">
-                    Votre prénoms ou nom
-                </label>
-                <input type="text" class="input shadow-md" placeholder="">
-            </div>
-            <div class="grid-cols-1 grid">
-                <label class="font-semibold">Votre numéro</label>
-                <input type="text" class="input shadow-md" placeholder="">
-            </div>
-            <div class="grid-cols-1 grid">
-                <label class="font-semibold">Votre Email (facultatif)</label>
-                <input type="text" class="input shadow-md" placeholder="">
-            </div>
-            <div class="grid-cols-1 grid">
-                <label class="font-semibold">Ville</label>
-                <input type="text" class="input shadow-md" placeholder="">
-            </div>
-            <div class="grid-cols-1 grid">
-                <label class="font-semibold">Votre quartier ou rue</label>
-                <input type="text" class="input shadow-md" placeholder="">
-            </div>
-            <Link :href="route('checkout')" class="text-center py-4 rounded-full bg-amber-800 text-white font-semibold">
-                Suivant <i class="fa-solid fa-arrow-right"></i>
-            </Link>
+                <div class="grid-cols-1 grid">
+                    <label class="font-semibold">
+                        Votre Nom
+                    </label>
+                    <input type="text" v-model="form_delivery.name" required class="input shadow-md font-semibold bg-red-50" placeholder="">
+                </div>
+                <div class="grid-cols-1 grid">
+                    <label class="font-semibold">Votre numéro</label>
+                    <input type="text" v-model="form_delivery.phone" required class="input shadow-md font-semibold bg-red-50" placeholder="">
+                </div>
+                <div class="grid-cols-1 grid">
+                    <label class="font-semibold">Lieu de livraison</label>
+                    <input type="text" v-model="form_delivery.address" required class="input shadow-md font-semibold bg-red-50" placeholder="">
+                </div>
+                <button type="submit" class="text-center py-4 rounded-full bg-amber-800 text-white font-semibold">
+                    Suivant <i class="fa-solid fa-arrow-right"></i>
+                </button>
 
-        </div>
+            </div>
+        </form>
 
     </div>
 </template>
@@ -53,8 +47,18 @@
 <script setup>
     import {Link} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
+    import {reactive} from "vue";
 
     defineOptions({ layout:AppLayout })
+    const form_delivery= reactive({
+        name:null,
+        phone:null,
+        address:null,
+    })
+    const storeAdresse = () => {
+        localStorage.setItem("adresse_livraison",JSON.stringify(form_delivery));
+        window.location.href=route("checkout");
+    }
 </script>
 
 <style scoped>

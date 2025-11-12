@@ -2,7 +2,7 @@
 import {Head, Link} from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {ref, computed, watch, onMounted} from 'vue';
-import {showToast} from "@/helpers.js";
+import {formatPrice, showToast} from "@/helpers.js";
 
 defineOptions({ layout: AppLayout });
 
@@ -12,51 +12,12 @@ const props = defineProps({
 
 const selectedTailleId = ref(null);
 const selectedColorId = ref(null);
-const inCart = ref(false);
 const quantity = ref(1);
 const mainImage = ref(props.product.images.length > 0 ? `/storage/${props.product.images[0].image_path}` : '/assets/img/no-image.jpg');
 
-// Set initial selected variant if product has variants
-// if (props.product.variants.length > 0) {
-//     selectedTailleId.value = props.product.variants[0].taille_id;
-//     selectedColorId.value = props.product.variants[0].color_id;
-// }
-
-const availableTailles = computed(() => {
-    const tailles = new Set();
-    props.product.variants.forEach(variant => {
-        tailles.add(JSON.stringify({ id: variant.taille.id, name: variant.taille.name }));
-    });
-    return Array.from(tailles).map(t => JSON.parse(t));
-});
-
-const availableColors = computed(() => {
-    const colors = new Set();
-    props.product.variants.forEach(variant => {
-        colors.add(JSON.stringify({ id: variant.color.id, name: variant.color.name, code: variant.color.code }));
-    });
-    return Array.from(colors).map(c => JSON.parse(c));
-});
-
-const selectedVariant = computed(() => {
-    return props.product.variants.find(
-        (variant) =>
-            variant.taille_id === selectedTailleId.value &&
-            variant.color_id === selectedColorId.value
-    );
-});
-
-const displayedPrice = computed(() => {
-    return selectedVariant.value ? selectedVariant.value.product.price : props.product.price;
-});
 
 const incrementQuantity = () => {
     quantity.value++;
-    // if (selectedVariant.value && quantity.value < selectedVariant.value.quantity) {
-    //     quantity.value++;
-    // } else if (!selectedVariant.value) {
-    //     quantity.value++; // Allow increment even without variant if no stock check
-    // }
 };
 
 const decrementQuantity = () => {
@@ -69,46 +30,15 @@ const selectImage = (imagePath) => {
     mainImage.value = `/storage/${imagePath}`;
 };
 
-// Watch for changes in selected variant to update main image if needed
-watch(selectedVariant, (newVariant) => {
-    // if (newVariant && newVariant.product.images.length > 0) {
-    //     mainImage.value = `/storage/${newVariant.product.images[0].image_path}`;
-    // } else if (props.product.images.length > 0) {
-    //     mainImage.value = `/storage/${props.product.images[0].image_path}`;
-    // } else {
-    //     mainImage.value = '/assets/img/no-image.jpg';
-    // }
-});
-watch(selectedTailleId, (value) => {
-    console.log(value);
-})
+const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+const carts = ref(Array.isArray(storedCart) ? storedCart : [storedCart]);
 
-// --- Cart Logic (LocalStorage) ---
-const cart = ref(JSON.parse(localStorage.getItem('cart')) || {});
-
-onMounted(() => {
-    console.log(selectedTailleId);
-});
 
 const saveCart = () => {
     localStorage.setItem('cart', JSON.stringify(cart.value));
 };
 
 const addToCart = () => {
-    if (!selectedVariant.value) {
-        alert('Please select a size and color.');
-        return;
-    }
-    if (selectedVariant.value.quantity === 0) {
-        alert('This variant is out of stock.');
-        return;
-    }
-    if (quantity.value > selectedVariant.value.quantity) {
-        alert(`Only ${selectedVariant.value.quantity} items are available in stock.`);
-        return;
-    }
-
-    const variantId = selectedVariant.value.id;
     const item = cart.value[variantId];
 
     if (item) {
@@ -119,7 +49,7 @@ const addToCart = () => {
 
             product_id: props.product.id,
             name: props.product.name,
-            price: selectedVariant.value.product.price,
+            price: product.price,
             image: props.product.images.length > 0 ? props.product.images[0].image_path : null,
             quantity: quantity.value,
         };
@@ -127,7 +57,10 @@ const addToCart = () => {
     saveCart();
     showToast("Produit ajouté au panier avec succès");
 };
-
+//
+// onMounted(() => {
+//     localStorage.removeItem('cart');
+// })
 // --- Wishlist Logic (LocalStorage) ---
 const wishlist = ref(JSON.parse(localStorage.getItem('wishlist')) || {});
 
@@ -155,6 +88,7 @@ const toggleWishlist = (product) => {
     saveWishlist();
 };
 
+
 // Watch for changes in localStorage from other tabs/windows
 window.addEventListener('storage', (event) => {
     if (event.key === 'cart') {
@@ -164,6 +98,27 @@ window.addEventListener('storage', (event) => {
         wishlist.value = JSON.parse(event.newValue || '{}');
     }
 });
+const buyNow = () => {
+    let cart_c = {
+        product_id: props.product.id,
+        name: props.product.name,
+        price: props.product.price,
+        image: props.product.images.length > 0 ? props.product.images[0].image_path : null,
+        quantity: quantity.value,
+    };
+    const existingItem = carts.value.find(item => item.product_id === cart_c.product_id);
+
+    if (existingItem) {
+        // Update quantity if already exists
+        existingItem.quantity += quantity.value;
+    } else {
+        // Add new item
+        carts.value.push(cart_c);
+    }
+    localStorage.setItem('cart', JSON.stringify(carts.value));
+
+    window.location.href=route('checkout');
+}
 
 
 </script>
@@ -181,7 +136,8 @@ window.addEventListener('storage', (event) => {
 
             </div>
             <div class="">
-                <Link class="bg-red-600 px-4 py-2 text-white rounded-md">Achater maintenant</Link>
+                <button @click="addToCart" :disabled="!selectedTailleId || !selectedColorId"
+                        class="bg-red-600 px-4 py-2 disabled:opacity-50 text-white rounded-md">Ajouter au panier</button>
             </div>
         </div>
         <div class="bg-rose-100 py-1 rounded-lg">
@@ -214,7 +170,7 @@ window.addEventListener('storage', (event) => {
             <div class="flex mt-3 ">
                 <div class="basis-3/6">
                     <h3 class="font-semibold text-lg uppercase">Prix : </h3>
-                    <h2 class="font-semibold text-xl text-amber-600">{{ displayedPrice }} FCFA</h2>
+                    <h2 class="font-semibold text-xl text-amber-600"> {{ formatPrice(product.price) }} FCFA</h2>
                 </div>
                 <div class="basis-2/6">
                     <h3 class="font-semibold text-xl">Quantité : </h3>
@@ -226,10 +182,10 @@ window.addEventListener('storage', (event) => {
                 </div>
             </div>
             <h2 class="font-semibold text-lg mt-6">
-                Nos tailles disponibles
+               Tailles disponibles
             </h2>
             <div class="flex mt-2 text-center items-center space-x-2">
-                <label v-for="taille in availableTailles" :key="taille.id" :for="`size-${taille.id}`"
+                <label v-for="taille in product.tailles" :key="taille.id" :for="`size-${taille.id}`"
                        class="px-3 py-2 shadow-lg border rounded-full cursor-pointer"
                        :class="{'bg-amber-950 text-white': selectedTailleId === taille.id,
                         'bg-white text-black': selectedTailleId !== taille.id}">
@@ -238,10 +194,10 @@ window.addEventListener('storage', (event) => {
                 </label>
             </div>
             <h2 class="font-semibold text-lg mt-6">
-                Nos couleurs disponibles
+                Couleurs disponibles
             </h2>
             <div class="flex mt-2 text-center items-center space-x-2">
-                <label v-for="color in availableColors" :key="color.id" :for="`color-${color.id}`"
+                <label v-for="color in product.colors" :key="color.id" :for="`color-${color.id}`"
                        class="w-10 h-10 shadow-lg rounded-full flex items-center justify-center cursor-pointer"
                        :style="{ backgroundColor: color.code }"
                        :class="{'border-2 border-amber-500': selectedColorId === color.id}">
@@ -252,9 +208,7 @@ window.addEventListener('storage', (event) => {
             <h2 class="font-semibold text-lg mt-6">
                 Description:
             </h2>
-            <p class="mt-1">
-                {{ product.description }}
-            </p>
+            <p class="mt-1" v-html="product.description.replace(/\n/g, '<br>')"></p>
             <div class=" mt-6">
 <!--                <div class="px-2 py-2 bg-white mb-4">-->
 <!--                    <h2 class="font-semibold text-lg  ">-->
@@ -304,9 +258,9 @@ window.addEventListener('storage', (event) => {
                 <button class=" basis-1/6 p-3 w-full text-green-600 border-green-600 border  text-center rounded-lg">
                     <i class="fa-brands fa-whatsapp"></i>
                 </button>
-                <button @click="addToCart" class="p-3 w-full text-white disabled:opacity-25 bg-amber-600 text-center rounded-lg"
-                        :disabled="!selectedTailleId || !selectedColorId">
-                    <i class="fa-solid fa-cart-plus"></i> Ajouter au panier
+                <button class="p-3 w-full text-white disabled:opacity-50 bg-amber-600 text-center rounded-lg"
+                      :disabled="!selectedTailleId || !selectedColorId " @click="buyNow" >
+                    <i class="fa-solid fa-cart-plus"></i> Achater maintenant
                 </button>
             </div>
         </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Categorie;
 use App\Models\Color;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\Taille;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ class ProductController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Products/Index', [
-            'products' => Product::withSum('variants', 'quantity')->with('images')->latest()->paginate(10), // Eager load images
+            'products' => Product::query()->with(['tailles','colors'])->with('images')->latest()->simplePaginate(10), // Eager load images
         ]);
     }
 
@@ -37,10 +38,8 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
-            'variants' => 'array',
-            'variants.*.taille_id' => 'required|exists:tailles,id',
-            'variants.*.color_id' => 'required|exists:colors,id',
-            'variants.*.quantity' => 'required|integer|min:0',
+            'taille_ids' => 'required|exists:tailles,id',
+            'color_ids' => 'required|exists:colors,id',
             'images' => 'array', // Expect an array of files
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -53,14 +52,8 @@ class ProductController extends Controller
             'description' => $request->description,
         ]);
 
-        // Create variants
-        foreach ($request->variants as $variantData) {
-            $product->variants()->create([
-                'taille_id' => $variantData['taille_id'],
-                'color_id' => $variantData['color_id'],
-                'quantity' => $variantData['quantity'],
-            ]);
-        }
+        $product->tailles()->attach($request->taille_ids);
+        $product->colors()->attach($request->color_ids);
 
         // Handle image uploads
         if ($request->hasFile('images')) {
@@ -83,7 +76,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $product->load('variants.taille', 'variants.color', 'images'); // Eager load images
+        $product->load('tailles', 'colors', 'images'); // Eager load images
         return Inertia::render('Admin/Products/Edit', [
             'product' => $product,
             'categories' => Categorie::all(),
@@ -99,10 +92,9 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
-            'images' => 'array', // Expect an array of files for new uploads
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'existing_image_ids' => 'array', // Array of IDs of images to keep
-            'existing_image_ids.*' => 'exists:product_images,id',
+            'images.*' => 'nullable',
+            'taille_ids' => 'required|array',
+            'color_ids' => 'required|array',
         ]);
 
         $product->update([
@@ -112,6 +104,8 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'description' => $request->description,
         ]);
+        $product->tailles()->sync($request->taille_ids);
+        $product->colors()->sync($request->color_ids);
         // Handle new image uploads
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -125,13 +119,13 @@ class ProductController extends Controller
 
         // Handle image deletions (if existing_image_ids is provided)
         $imagesToKeep = $request->input('existing_image_ids', []);
-        foreach ($product->images as $image) {
-            if (!in_array($image->id, $imagesToKeep)) {
-                Storage::disk('public')->delete($image->image_path);
-                $image->delete();
+        if ($imagesToKeep){
+            foreach ($imagesToKeep as $image){
+                ProductImage::query()->where('image_path', $imagesToKeep)->delete();
+                Storage::disk('public')->delete($image);
             }
-        }
 
+        }
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 

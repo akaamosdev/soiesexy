@@ -5,6 +5,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import CheckBoxMultple from "@/Components/CheckBoxMultple.vue";
+import {onMounted} from "vue";
 
 const props = defineProps({
     product: Object,
@@ -20,50 +22,30 @@ const productForm = useForm({
     price: props.product.price,
     category_id: props.product.category_id,
     description: props.product.description,
+    taille_ids: props.product.tailles.map(taille => taille.id),
+    color_ids: props.product.colors.map(color => color.id),
     images: [], // For new image uploads
-    existing_image_ids: props.product.images.map(image => image.id), // IDs of images to keep
+    existing_image_ids: [], // IDs of images to keep
+    existing_images: props.product.images.map(image => image.image_path),
 });
 
-// New variant form
-const variantForm = useForm({
-    taille_id: '',
-    color_id: '',
-    quantity: 0,
-});
+
+onMounted(()=>{
+    //console.log(props.product.tailles);
+})
 
 const submitProductForm = () => {
     productForm.post(route('products.update', props.product.id));
 };
 
-const addVariant = () => {
-    variantForm.post(route('products.variants.store', props.product.id), {
-        preserveScroll: true,
-        onSuccess: () => variantForm.reset(),
-    });
-};
-
-const updateVariantQuantity = (variantId, quantity) => {
-    const form = useForm({ quantity });
-    form.put(route('variants.update', variantId), {
-        preserveScroll: true,
-    });
-};
-
-const deleteVariant = (variantId) => {
-    if (confirm('Are you sure you want to delete this variant?')) {
-        const form = useForm({});
-        form.delete(route('variants.destroy', variantId), {
-            preserveScroll: true,
-        });
-    }
-};
 
 const handleImageChange = (e) => {
     productForm.images = e.target.files;
 };
 
-const removeExistingImage = (imageId) => {
-    productForm.existing_image_ids = productForm.existing_image_ids.filter(id => id !== imageId);
+const removeExistingImage = (index,image_path) => {
+    productForm.images = productForm.existing_images.splice(index,1);
+    productForm.existing_image_ids.push(image_path);
 };
 
 </script>
@@ -104,6 +86,18 @@ const removeExistingImage = (imageId) => {
                                     </select>
                                     <InputError class="mt-2" :message="productForm.errors.category_id" />
                                 </div>
+                                 <div class="">
+                                     <InputLabel for="taille_ids" value="Taille disponibles" />
+                                     <label v-for="taille in tailles" :key="taille.id">
+                                         <CheckBoxMultple v-model="productForm.taille_ids" :value="taille.id" class="mx-3" />{{ taille.name}}
+                                     </label>
+                                 </div>
+                            </div>
+                            <div class="">
+                                <InputLabel for="color_ids" value="Couleurs disponibles" />
+                                <label v-for="col in colors" :key="col.id">
+                                    <CheckBoxMultple v-model="productForm.color_ids" :value="col.id" class="mx-3" />{{ col.name}}
+                                </label>
                             </div>
                             <div class="mt-4">
                                 <InputLabel for="description" value="Description" />
@@ -115,10 +109,10 @@ const removeExistingImage = (imageId) => {
                             <div class="mt-6">
                                 <h4 class="font-medium mb-2">Product Images</h4>
                                 <!-- Existing Images -->
-                                <div v-if="product.images.length > 0" class="mb-4 grid grid-cols-4 gap-4">
-                                    <div v-for="image in product.images" :key="image.id" class="relative">
-                                        <img :src="`/storage/${image.image_path}`" :alt="image.alt_text" class="w-full h-32 object-cover rounded-md">
-                                        <button type="button" @click="removeExistingImage(image.id)" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs">X</button>
+                                <div v-if="productForm.existing_images.length > 0" class="mb-4 grid grid-cols-4 gap-4">
+                                    <div v-for="(image,index) in productForm.existing_images" :key="index"  class="relative">
+                                        <img :src="`/storage/${image}`" :alt="image" class="w-full h-32 object-cover rounded-md">
+                                        <button type="button" @click="removeExistingImage(index,image)" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs">X</button>
                                     </div>
                                 </div>
                                 <InputLabel for="new_images" value="Upload New Images" />
@@ -136,59 +130,6 @@ const removeExistingImage = (imageId) => {
                     </div>
                 </div>
 
-                <!-- Product Variants Management -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
-                        <h3 class="text-lg font-semibold mb-4">Product Variants</h3>
-                        <!-- Existing Variants -->
-                        <div class="mb-6">
-                            <h4 class="font-medium mb-2">Existing Variants</h4>
-                            <div v-if="product.variants.length > 0" class="space-y-2">
-                                <div v-for="variant in product.variants" :key="variant.id" class="flex items-center justify-between p-2 border rounded-md">
-                                    <div>
-                                        <span class="font-semibold">{{ variant.taille.name }} / {{ variant.color.name }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-4">
-                                        <TextInput type="number" class="w-24" :value="variant.quantity" @input="updateVariantQuantity(variant.id, $event.target.value)" />
-                                        <button @click="deleteVariant(variant.id)" class="text-red-500 hover:text-red-700 font-semibold">Delete</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <p v-else class="text-sm text-gray-500">No variants exist for this product yet.</p>
-                        </div>
-
-                        <!-- Add New Variant Form -->
-                        <div>
-                             <h4 class="font-medium mb-2">Add New Variant</h4>
-                            <form @submit.prevent="addVariant" class="flex items-end gap-4 p-4 border rounded-md bg-gray-50">
-                                <div>
-                                    <InputLabel for="taille_id" value="Size" />
-                                    <select id="taille_id" v-model="variantForm.taille_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                        <option value="" disabled>Select size</option>
-                                        <option v-for="taille in tailles" :key="taille.id" :value="taille.id">{{ taille.name }}</option>
-                                    </select>
-                                     <InputError class="mt-2" :message="variantForm.errors.taille_id" />
-                                </div>
-                                <div>
-                                    <InputLabel for="color_id" value="Color" />
-                                    <select id="color_id" v-model="variantForm.color_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                        <option value="" disabled>Select color</option>
-                                        <option v-for="color in colors" :key="color.id" :value="color.id">{{ color.name }}</option>
-                                    </select>
-                                    <InputError class="mt-2" :message="variantForm.errors.color_id" />
-                                </div>
-                                <div>
-                                    <InputLabel for="quantity" value="Quantity" />
-                                    <TextInput id="quantity" type="number" class="w-24" v-model="variantForm.quantity" required />
-                                    <InputError class="mt-2" :message="variantForm.errors.quantity" />
-                                </div>
-                                <PrimaryButton :class="{ 'opacity-25': variantForm.processing }" :disabled="variantForm.processing">
-                                    Add Variant
-                                </PrimaryButton>
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </AdminLayout>

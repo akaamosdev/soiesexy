@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_variant_id')->constrained()->onDelete('cascade');
+            $table->foreignId('taille_id')->constrained()->onDelete('cascade');
+            $table->foreignId('color_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('quantity');
-            $table->decimal('price', 8, 2);
+            $table->decimal('price', 20, 2);
+            $table->decimal('montant', 20, 2);
             $table->timestamps();
         });
     }

@@ -37,9 +37,10 @@ const destroy = (id) => {
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Stock</th>
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Edit</span>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tailles</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Couleurs</th>
+                                <th scope="col" class="relative text-gray-500 px-6 py-3">
+                                    <span class="sr-only">Action</span>
                                 </th>
                             </tr>
                         </thead>
@@ -55,8 +56,15 @@ const destroy = (id) => {
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ product.price }}</div>
                                 </td>
+                                <td class="px-6 py-4 whitespace-nowrap ">
+                                    <div class="flex">
+                                        <div v-for="taille in product.tailles" class="text-sm  text-gray-900 mr-2">{{ taille.name }}, </div>
+                                    </div>
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ product.variants_sum_quantity }}</div>
+                                    <div class="flex">
+                                        <div v-for="color in product.colors" class="text-sm  text-gray-900 mr-2">{{ color.name }}, </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <Link :href="route('products.edit', product.id)" class="text-indigo-600 hover:text-indigo-900">Edit</Link>

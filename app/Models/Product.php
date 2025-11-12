@@ -16,6 +16,7 @@ class Product extends Model
         'price',
         'reference',
         'category_id',
+        'statut',
     ];
 
     public function variants()
@@ -31,5 +32,11 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+    public function colors(){
+        return $this->belongsToMany(Color::class, 'product_colors', 'product_id', 'color_id');
+    }
+    public function tailles(){
+        return $this->belongsToMany(Taille::class,"product_tailles",'product_id','taille_id');
     }
 }

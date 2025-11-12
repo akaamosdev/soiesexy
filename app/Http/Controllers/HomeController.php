@@ -9,7 +9,7 @@ use Inertia\Inertia;
 class HomeController extends Controller
 {
    public function home(){
-       $products = Product::with(['images', 'variants.taille', 'variants.color'])->withSum('variants', 'quantity')->latest()->paginate(12);
+       $products = Product::with(['images', 'tailles', 'colors'])->latest()->paginate(12);
        return Inertia::render('Home', [
            'products' => $products,
        ]);
@@ -23,7 +23,7 @@ class HomeController extends Controller
        return Inertia::render('Card');
    }
     public function show(Product $product){
-        $product->load('variants.taille', 'variants.color', 'variants.product', 'images');
+        $product->load('tailles', 'colors', 'images');
        return Inertia::render('Show', [
            'product' => $product,
        ]);

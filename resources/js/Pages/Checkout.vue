@@ -1,18 +1,44 @@
 <script setup>
-    import {Link} from "@inertiajs/vue3";
+import {Link, router} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
+    import {computed, onMounted, ref} from "vue";
+    import {formatPrice, getAddressLivraison, getCart} from "../helpers.js";
 
     defineOptions({ layout:AppLayout })
+    const cart = ref(getCart());
+    const adresse= ref(getAddressLivraison());
+
+    const montantLivraison = ref(1500); // Example: 1000 FCFA delivery fee
+
+    const totalCommande = computed(() => {
+        const totalProduits = cart.value.reduce((acc, item) => {
+            return acc + (Number(item.price) * Number(item.quantity));
+        }, 0);
+
+        return totalProduits + Number(montantLivraison.value);
+    });
+    const storeOrders = () => {
+        axios.post(route('orders.store'), {
+            name:adresse.value.name,
+            phone: adresse.value.phone,
+            address: adresse.value.address,
+            montant:totalCommande.value,
+            items:cart.value
+        },).then(response => {
+            console.log(response);
+        })
+    }
+
 </script>
 <template>
-    <div class="flex flex-col justify-between h-screen relative">
+    <div class="flex flex-col justify-start h-screen relative">
         <div class="">
             <div class="flex justify-start items-center px-2 py-3 border-b bg-white shadow-lg sticky top-0 z-10">
                 <Link :href="route('home')" class="px-2 ">
                     <i class="fa-solid fa-chevron-left"></i>
                 </Link>
                 <div class="flex justify-start w-full">
-                    <h3>Commandez-maintenant</h3>
+                    <h3>Détail commande</h3>
                 </div>
                 <a href="" class="px-3">
                     <i class="fa-solid fa-cart-shopping  text-md"></i>
@@ -20,40 +46,44 @@
             </div>
             <div class="flex flex-col justify-between">
                 <div class="">
-                    <a href="" class="px-2 py-3 flex shadow-md items-center justify-between">
+                    <Link :href="route('adresse.create')" class="px-2 py-3 flex shadow-md items-center justify-between">
                         <div class="py-2 px-4 bg-amber-900 rounded-lg text-white"><i class="fa-solid fa-location-dot"></i></div>
                         <div class="ml-3 text-left w-full">
-                            <h3 class="font-semibold ">Lieu de livraison</h3>
-                            <h4 class="text-sm">Abidjan, Yopougon</h4>
+                            <h3 class="font-semibold flex justify-between ">Lieu de livraison</h3>
+                            <h4 class="text-sm">{{ adresse.address }}</h4>
                         </div>
-                        <span class="fa-solid fa-chevron-right"></span>
-                    </a>
-                    <div class="grid-cols-1 grid p-3 ">
-                        <label class="">Information additionnelle</label>
-                        <textarea class="textarea textarea-error" rows="4" placeholder="Exp: appelez moi avant la livraison"></textarea>
-                    </div>
+                        <div class="">
+                            <h3 class="font-semibold">Téléphone</h3>
+                            <h4 class="text-sm text-red-600">{{ adresse.phone}}</h4>
+                        </div>
+                    </Link>
+<!--                    <div class="grid-cols-1 grid p-3 ">-->
+<!--                        <label class="">Information additionnelle</label>-->
+<!--                        <textarea class="textarea textarea-error" rows="4" placeholder="Exp: appelez moi avant la livraison"></textarea>-->
+<!--                    </div>-->
                 </div>
 
             </div>
         </div>
         <div class="">
             <div class="grid grid-cols-1 gap-1">
-                <div v-for="n in 5" class="flex justify-between px-3 py-2 bg-white border rounded-md">
-                    <h4 class="">Soutiens-gorge rouge </h4>
-                    <h4 class="">{{ n }} x 4 500 </h4>
+                <div v-for="ca in cart" class="flex justify-between px-3 py-2 bg-white border rounded-md">
+                    <h4 class="">{{ ca.name }} </h4>
+                    <h4 class="">{{ ca.quantity }} x {{  formatPrice(ca.price) }} </h4>
                 </div>
-                <div class="flex justify-between px-3 py-2 bg-error text-white font-semibold ">
-                    <h4 class="">Livraison </h4>
-                    <h4 class="">9500 </h4>
+
+                <div class="flex justify-between px-3 py-2 text-red-600 font-semibold ">
+                    <h4 class="">Frais livraison </h4>
+                    <h4 class="">{{ formatPrice(montantLivraison)}}</h4>
                 </div>
                 <div class="border border-black bg-black my-2 max-w-md w-full"></div>
                 <div class="flex justify-between px-3 py-2 text-black text-lg font-semibold ">
                     <h4 class="">Ma commande : </h4>
-                    <h4 class="">18 500 </h4>
+                    <h4 class="">{{ formatPrice(totalCommande) }} </h4>
                 </div>
             </div>
             <div class="flex justify-center bg-white px-6 py-4">
-                <button class="btn bg-orange-500 w-full font-semibold uppercase text-white">Commandez maintenant</button>
+                <button @click="storeOrders" class="btn bg-orange-500 w-full font-semibold uppercase rounded-xl text-white">Commandez maintenant</button>
             </div>
         </div>
 
