@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categorie;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Taille;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use PhpOffice\PhpSpreadsheet\Calculation\Category;
 
 class HomeController extends Controller
 {
@@ -28,12 +32,15 @@ class HomeController extends Controller
            'product' => $product,
        ]);
    }
-    public function filter(){
-
-       return Inertia::render('Filter');
+    public function filtrer(){
+        $data['products'] = Product::query()
+            ->with(['tailles', 'colors', 'images'])->limit(50)->get();
+        $data['categories']=Categorie::all();
+        $data['tailles']=Taille::all();
+        $data['colors']=Color::all();
+       return Inertia::render('Filter',$data);
    }
     public function adresse(){
-
        return Inertia::render('Adresse');
    }
    public function checkout(){

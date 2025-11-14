@@ -101,6 +101,8 @@ window.addEventListener('storage', (event) => {
 const buyNow = () => {
     let cart_c = {
         product_id: props.product.id,
+        taille_id: selectedTailleId,
+        color_id: selectedColorId,
         name: props.product.name,
         price: props.product.price,
         image: props.product.images.length > 0 ? props.product.images[0].image_path : null,
@@ -116,8 +118,13 @@ const buyNow = () => {
         carts.value.push(cart_c);
     }
     localStorage.setItem('cart', JSON.stringify(carts.value));
-
-    window.location.href=route('checkout');
+    let address= localStorage.getItem('adresse_livraison');
+    console.log(address);
+    if (address==null) {
+        window.location.href=route('adresse.create');
+    }else{
+        window.location.href=route('checkout');
+    }
 }
 
 

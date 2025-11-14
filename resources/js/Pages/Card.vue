@@ -10,7 +10,7 @@
                     </h4>
                 </div>
                 <div class="flex items-center px-0">
-                    <Link :href="route('adresse.create')" class="bg-amber-300 px-4 py-2 rounded-lg">
+                    <Link :href="route('adresse.create')" class="bg-rose-600 text-white px-4 py-2 rounded-lg">
                         Commandez
                         <i class="fa-solid fa-arrow-right"></i>
                     </Link>
@@ -28,7 +28,7 @@
                 <div v-if="cartItemCount === 0" class="text-center py-10 text-gray-500">
                     Votre panier est vide.
                 </div>
-                <div v-for="item in cart" :key="item.id" class="flex relative border m-1 p-1 rounded-md">
+                <div v-for="(item,id) in cart" :key="id" class="flex relative border m-1 p-1 rounded-md">
                     <div class="basis-2/6">
                         <div class="img bg-white rounded-xl ">
                             <img :src="`/storage/${item.image}`" :alt="item.name" class="h-32 w-full object-contain rounded-xl">
@@ -41,13 +41,13 @@
                         <div class="flex justify-between mt-5">
                             <div class="basis-3/6">
                                 <div class="flex justify-between">
-                                    <button @click="updateQuantity(item.id, -1)" class="px-3 py-0 rounded-full bg-amber-950 text-white font-semibold text-xl">-</button>
+                                    <button @click="updateQuantity(id, -1)" class="px-3 py-0 rounded-full bg-amber-950 text-white font-semibold text-xl">-</button>
                                     <span class=" text-xl">{{ item.quantity }}</span>
-                                    <button @click="updateQuantity(item.id, 1)" class="px-2 py-0 rounded-full bg-amber-950 text-white font-semibold text-xl">+</button>
+                                    <button @click="updateQuantity(id, 1)" class="px-2 py-0 rounded-full bg-amber-950 text-white font-semibold text-xl">+</button>
                                 </div>
                             </div>
                             <div class="basis-3/6 text-right">
-                                <button @click="removeItem(item.id)" class="text-red-500"><i class="fa-regular fa-trash-can"></i> Supprimer</button>
+                                <button @click="removeItem(id)" class="text-red-500"><i class="fa-regular fa-trash-can"></i> Supprimer</button>
                             </div>
                         </div>
                     </div>
@@ -57,9 +57,9 @@
                 </div>
             </div>
         </div>
-        <div class="p-3 mb-20 shadow-2xl bg-amber-600 bg-transparent/52 max-w-md w-full text-center   bottom-0  text-white">
-            Commandez maintenant
-        </div>
+        <button class="p-3 mb-20 shadow-2xl bg-amber-600 bg-transparent/52 max-w-md w-full text-center   bottom-0  text-white">
+            Ajouter d'autres articles
+        </button>
     </div>
 
 </template>
@@ -68,10 +68,11 @@
     import {Link} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
     import { ref, computed, watch } from 'vue';
+    import {getCart} from "@/helpers.js";
 
     defineOptions({ layout:AppLayout });
 
-    const cart = ref(JSON.parse(localStorage.getItem('cart')) || {});
+    const cart = ref(getCart());
 
     const saveCart = () => {
         localStorage.setItem('cart', JSON.stringify(cart.value));
@@ -90,7 +91,7 @@
         if (item) {
             item.quantity += change;
             if (item.quantity <= 0) {
-                delete cart.value[id];
+                delete cart.value.splice(id, 1);
             }
             saveCart();
         }

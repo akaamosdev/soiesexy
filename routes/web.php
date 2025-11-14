@@ -43,6 +43,9 @@ Route::get('/espace-client',[\App\Http\Controllers\HomeController::class,'dashbo
 Route::prefix("orders")->group(function () {
     Route::get('/',[\App\Http\Controllers\OrderController::class,'index'])->name('orders');
     Route::post('/store',[\App\Http\Controllers\OrderController::class,'store'])->name('orders.store');
+    Route::get('/success',function (){
+        return Inertia::render('SuccessCommande');
+    })->name('orders.success');
 });
 
 Route::middleware('auth')->prefix('admin')->group(function (){

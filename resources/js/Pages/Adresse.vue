@@ -7,34 +7,41 @@
             <div class="flex justify-start w-full">
                 <h3>Information de livraison</h3>
             </div>
-            <Link :href="route('card')" class="px-3">
-                <i class="fa-solid fa-cart-shopping  text-md"></i>
-            </Link>
-
         </div>
         <form @submit.prevent="storeAdresse">
             <div class="grid grid-cols-1 gap-3 p-3">
                 <div class="flex  justify-center mb-3">
-                    <img src="/assets/img/delivery.avif" alt="" class="rounded-full object-contain h-48 border border-red-200">
-<!--                    <div class=" mt-5 bg-red-50 p-3 rounded-full">-->
-<!--                        <i class="fa-solid fa-2x fa-location-dot"></i>-->
-<!--                    </div>-->
+                    <img src="/assets/img/delivery.avif" alt="" class="rounded-full object-contain h-32 border border-red-200">
                 </div>
                 <div class="grid-cols-1 grid">
                     <label class="font-semibold">
-                        Votre Nom
+                        Votre nom
                     </label>
-                    <input type="text" v-model="form_delivery.name" required class="input shadow-md font-semibold bg-red-50" placeholder="">
+                    <input type="text" v-model="form_delivery.name" required class="input shadow-md font-semibold bg-rose-50" placeholder="">
                 </div>
                 <div class="grid-cols-1 grid">
                     <label class="font-semibold">Votre numéro</label>
-                    <input type="text" v-model="form_delivery.phone" required class="input shadow-md font-semibold bg-red-50" placeholder="">
+                    <input type="text" v-model="form_delivery.phone" required class="input shadow-md font-semibold bg-rose-50" placeholder="">
                 </div>
                 <div class="grid-cols-1 grid">
                     <label class="font-semibold">Lieu de livraison</label>
-                    <input type="text" v-model="form_delivery.address" required class="input shadow-md font-semibold bg-red-50" placeholder="">
+                    <input type="text" v-model="form_delivery.address" required class="input shadow-md font-semibold bg-rose-50" placeholder="">
                 </div>
-                <button type="submit" class="text-center py-4 rounded-full bg-amber-800 text-white font-semibold">
+                <div class="">
+                    <h3 class="font-semibold mb-3">Mode de livraison</h3>
+                  <div class="bg-gray-100 p-2 rounded-md">
+                      <div class="flex justify-between items-center mb-2">
+                          <label for=""><input type="radio" required v-model="form_delivery.frais" value="1500" > Abidjan</label>
+                          <label for="" class="font-semibold">1 500 F CFA</label>
+                      </div>
+                      <div class="flex justify-between items-center">
+                          <label for=""><input type="radio" v-model="form_delivery.frais" value="2500" > Hors Abidjan</label>
+                          <label for="">2 500 F CFA</label>
+                      </div>
+                  </div>
+
+                </div>
+                <button type="submit" class="text-center py-4 rounded-full bg-rose-600 text-white font-semibold">
                     Suivant <i class="fa-solid fa-arrow-right"></i>
                 </button>
 
@@ -45,19 +52,22 @@
 </template>
 
 <script setup>
-    import {Link} from "@inertiajs/vue3";
+import {Link, router} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
-    import {reactive} from "vue";
+    import {reactive, ref} from "vue";
+    import {getAddressLivraison} from "@/helpers.js";
 
-    defineOptions({ layout:AppLayout })
+    defineOptions({ layout:AppLayout });
+    const last_adresse= ref(getAddressLivraison());
     const form_delivery= reactive({
-        name:null,
-        phone:null,
-        address:null,
+        name:last_adresse.value.name,
+        phone:last_adresse.value.phone,
+        address:last_adresse.value.address,
+        frais:last_adresse.value.frais??1500,
     })
     const storeAdresse = () => {
         localStorage.setItem("adresse_livraison",JSON.stringify(form_delivery));
-        window.location.href=route("checkout");
+        router.get(route("checkout"));
     }
 </script>
 

@@ -1,7 +1,7 @@
 import {reactive, ref} from 'vue';
 
 const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
-const addressLivraison = JSON.parse(localStorage.getItem('adresse_livraison') || {});
+const addressLivraison = JSON.parse(localStorage.getItem('adresse_livraison') || '{}');
 const carts = ref(Array.isArray(storedCart) ? storedCart : [storedCart]);
 
 const state = reactive({

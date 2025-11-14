@@ -9,10 +9,15 @@ import {Link} from "@inertiajs/vue3";
             rounded-l-lg rounded-r-lg max-w-md">
                 <div class="flex justify-center space-x-10">
                     <Link :href="route('home')" class="text-white ">
-                            <div class="bg-amber-900  text-slate-950 border px-2 py-3 rounded-full h-12 w-12 text-center
+                            <div class="bg-rose-900  text-slate-100 border px-2 py-3 rounded-full h-12 w-12 text-center
                             px-2 py-3 rounded-full h-12 w-12 text-center p">
                                 <i class="fa-solid fa-house"></i>
                             </div>
+                    </Link>
+                    <Link :href="route('filtrer')" class="text-white ">
+                        <div class="bg-rose-900  text-slate-100 border px-2 py-3 rounded-full h-12 w-12 text-center">
+                            <i class="fa-solid fa-shop  cursor-pointer"></i>
+                        </div>
                     </Link>
                     <Link :href="route('wishlist')" class="text-white ">
                         <div class="bg-amber-900  text-slate-950 border px-2 py-3 rounded-full h-12 w-12 text-center">
@@ -23,11 +28,6 @@ import {Link} from "@inertiajs/vue3";
                         <div :class="$page.component==='Card'?'bg-amber-100 text-slate-950':'bg-amber-800  text-slate-50' "
                              class=" border px-2 py-3 rounded-full h-12 w-12 text-center ">
                         <i class="fa-solid fa-cart-plus"></i>
-                        </div>
-                    </Link>
-                    <Link :href="route('wishlist')" href="" class="text-white ">
-                        <div class="bg-amber-100 text-slate-950 border px-2 py-3 rounded-full h-12 w-12 text-center p">
-                            <i class="fa-solid fa-file"></i>
                         </div>
                     </Link>
                     <Link :href="route('dashboard')" class="text-white ">

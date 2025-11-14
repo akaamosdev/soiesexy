@@ -47,10 +47,12 @@ class OrderController extends Controller
                 "product_id"=>$item['product_id'],
                 "quantity"=>$item['quantity'],
                 "price"=>$item['price'],
+                "taille_id"=>$item['taille_id'],
+                "color_id"=>$item['color_id'],
                 "montant"=>$item['price']*$item['quantity'],
             ]);
         }
-        return response()->json(['statut'=>true,"Nous avons bien reçu votre commande ! Merci pour la confiance"]);
+        return response()->json(['statut'=>true,"message"=>"Nous avons bien reçu votre commande ! Merci pour la confiance"]);
     }
 
     /**

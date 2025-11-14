@@ -1,12 +1,24 @@
 
 <script setup>
-import {Link} from "@inertiajs/vue3";
+import {Link, useForm} from "@inertiajs/vue3";
 import {ref} from "vue";
 import ItemProduct from "@/Layouts/ItemProduct.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 defineOptions({ layout:AppLayout })
 const isFilter= ref(false);
+const props = defineProps({
+    products:Array,
+    categories:Array,
+    tailles:Array,
+    colors:Array
+})
+const form = useForm({
+    category_id:0,
+    taille_id:0,
+    min_price:0,
+    max_price:0,
+})
 </script>
 <template>
     <div class="relative">
@@ -22,10 +34,10 @@ const isFilter= ref(false);
             </a>
         </div>
         <div class="grid grid-cols-2 gap-2 px-2 mt-2">
-            <ItemProduct v-for="n in 10" />
+            <ItemProduct v-for="product in products" :product="product" />
         </div>
 
-        <div class="fixed bottom-0 bg-white w-full h-16 pb-2  px-2 pt-2
+        <div class="fixed bottom-0 bg-white w-full h-16 pb-2 left-0 right-0 mx-auto  px-2 pt-2
     rounded-l-lg rounded-r-lg max-w-md  rounded-full  z-10 ">
             <div class="flex justify-between space-x-0">
                 <button class=" p-3 w-full text-gray-700 font-semibold text-center">
@@ -36,8 +48,8 @@ const isFilter= ref(false);
             </div>
         </div>
 
-        <div class="fixed opacity-100 hidden filter-show bottom-0 bg-red-100 w-full max-w-md mb-16
-     max-w-md border border-gray-700 z-10 rounded-lg min-h-[500px] p-3" v-if="isFilter">
+        <div class="fixed opacity-100 filter-show bottom-0 left-0 right-0 mx-auto bg-red-100 w-full mb-16
+        max-w-md border border-gray-700 z-10 rounded-lg min-h-[500px] p-3" v-if="isFilter">
             <div class="flex justify-between mb-2">
                 <div class="font-semibold"><h2 class="">Filtrer</h2></div>
                 <div class="">
@@ -47,33 +59,27 @@ const isFilter= ref(false);
             <hr class="mb-3">
             <h3 class="font-semibold text-lg">Categorie:</h3>
             <div class="grid grid-cols-2 px-0 py-4 gap-2 mb-1 text-md border-b border-slate-50">
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 shadow">Tous</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">Soustiens-gorge</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">Slip</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">Nuisette</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">Nuit de miel</button>
+                <button v-for="cat in categories" :key="cat.id"
+                        class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 shadow">
+                    {{ cat.name }}
+                </button>
             </div>
             <hr class="mb-3">
             <h3 class="font-semibold text-lg">Tailles:</h3>
             <div class="grid grid-cols-4 px-0 py-4 gap-2 mb-1 text-md border-b border-slate-50">
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 shadow">Tous</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">Standard</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">S</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">M</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">XL</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">XXL</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">3XL</button>
-                <button class="p-2 bg-white text-slate-950 rounded-lg border border-red-400 ">4XL</button>
+                <button v-for="siz in tailles" :key="siz.id" class="p-2 bg-white text-slate-950 rounded-lg
+                border border-red-400 shadow">{{ siz.name }}</button>
+
             </div>
             <hr class="mb-2">
             <h3 class="font-semibold text-lg mb-1">Prix:</h3>
             <div class="flex justify-between">
                 <div class="mr-3">
-                    <input type="number" class="input w-full bordered">
+                    <input type="number" v-model="form.min_price" class="input w-full bordered">
                 </div>
                 <div class="divider divider-horizontal">-</div>
                 <div class="">
-                    <input type="number" class="input w-full">
+                    <input type="number" v-model="form.max_price" class="input w-full">
                 </div>
             </div>
             <hr>

@@ -31,41 +31,21 @@
 
 <script setup>
 import { Link } from "@inertiajs/vue3";
-import { ref, watch } from 'vue';
+import {onMounted, ref, watch} from 'vue';
+import {getCart} from "@/helpers.js";
 
 const props = defineProps({
     product: Object,
 });
 
 // --- Cart Logic (LocalStorage) ---
-const cart = ref(JSON.parse(localStorage.getItem('cart')) || {});
+const cart = ref(getCart());
 
+// onMounted(()=>{
+//     console.log(props.product);
+// })
 const saveCart = () => {
     localStorage.setItem('cart', JSON.stringify(cart.value));
-};
-
-const addToCart = (product) => {
-    // For simplicity, adding the first variant if available, or the product itself
-    // In a real scenario, you'd select a variant from the product page
-    const variantId = product.variants.length > 0 ? product.variants[0].id : `product-${product.id}`; // Use variant ID or product ID as key
-    const item = cart.value[variantId];
-
-    if (item) {
-        item.quantity++;
-    } else {
-        cart.value[variantId] = {
-            id: variantId,
-            product_id: product.id,
-            name: product.name,
-            price: product.price, // Use product base price for simplicity here
-            image: product.images.length > 0 ? product.images[0].image_path : null,
-            quantity: 1,
-            // Add variant specific details if needed
-            variant: product.variants.length > 0 ? product.variants[0] : null,
-        };
-    }
-    saveCart();
-    alert(`${product.name} added to cart!`);
 };
 
 // --- Wishlist Logic (LocalStorage) ---
@@ -79,21 +59,21 @@ const isInWishlist = (productId) => {
     return !!wishlist.value[productId];
 };
 
-const toggleWishlist = (product) => {
-    if (isInWishlist(product.id)) {
-        delete wishlist.value[product.id];
-        alert(`${product.name} removed from wishlist!`);
-    } else {
-        wishlist.value[product.id] = {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.images.length > 0 ? product.images[0].image_path : null,
-        };
-        alert(`${product.name} added to wishlist!`);
-    }
-    saveWishlist();
-};
+// const toggleWishlist = (product) => {
+//     if (isInWishlist(product.id)) {
+//         delete wishlist.value[product.id];
+//         alert(`${product.name} removed from wishlist!`);
+//     } else {
+//         wishlist.value[product.id] = {
+//             id: product.id,
+//             name: product.name,
+//             price: product.price,
+//             image: product.images.length > 0 ? product.images[0].image_path : null,
+//         };
+//         alert(`${product.name} added to wishlist!`);
+//     }
+//     saveWishlist();
+// };
 
 // Watch for changes in localStorage from other tabs/windows
 window.addEventListener('storage', (event) => {

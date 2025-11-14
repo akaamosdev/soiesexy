@@ -8,7 +8,7 @@ import {Link, router} from "@inertiajs/vue3";
     const cart = ref(getCart());
     const adresse= ref(getAddressLivraison());
 
-    const montantLivraison = ref(1500); // Example: 1000 FCFA delivery fee
+    const montantLivraison = ref(adresse.value.frais); // Example: 1000 FCFA delivery fee
 
     const totalCommande = computed(() => {
         const totalProduits = cart.value.reduce((acc, item) => {
@@ -25,9 +25,10 @@ import {Link, router} from "@inertiajs/vue3";
             montant:totalCommande.value,
             items:cart.value
         },).then(response => {
-            console.log(response);
+            router.get(route("orders.success"));
         })
     }
+
 
 </script>
 <template>
@@ -47,7 +48,7 @@ import {Link, router} from "@inertiajs/vue3";
             <div class="flex flex-col justify-between">
                 <div class="">
                     <Link :href="route('adresse.create')" class="px-2 py-3 flex shadow-md items-center justify-between">
-                        <div class="py-2 px-4 bg-amber-900 rounded-lg text-white"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="py-2 px-4 bg-rose-900 rounded-lg text-white"><i class="fa-solid fa-location-dot"></i></div>
                         <div class="ml-3 text-left w-full">
                             <h3 class="font-semibold flex justify-between ">Lieu de livraison</h3>
                             <h4 class="text-sm">{{ adresse.address }}</h4>
@@ -78,12 +79,12 @@ import {Link, router} from "@inertiajs/vue3";
                 </div>
                 <div class="border border-black bg-black my-2 max-w-md w-full"></div>
                 <div class="flex justify-between px-3 py-2 text-black text-lg font-semibold ">
-                    <h4 class="">Ma commande : </h4>
+                    <h4 class="">Total commande : </h4>
                     <h4 class="">{{ formatPrice(totalCommande) }} </h4>
                 </div>
             </div>
             <div class="flex justify-center bg-white px-6 py-4">
-                <button @click="storeOrders" class="btn bg-orange-500 w-full font-semibold uppercase rounded-xl text-white">Commandez maintenant</button>
+                <button @click="storeOrders" class="btn bg-rose-500 hover:bg-rose-600 w-full font-semibold uppercase rounded-xl text-white">Commandez maintenant</button>
             </div>
         </div>
 
