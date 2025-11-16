@@ -1,12 +1,12 @@
 <script setup>
-import {Link, router} from "@inertiajs/vue3";
+import {Head, Link, router} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
     import {computed, onMounted, ref} from "vue";
     import {formatPrice, getAddressLivraison, getCart} from "../helpers.js";
-
     defineOptions({ layout:AppLayout })
     const cart = ref(getCart());
     const adresse= ref(getAddressLivraison());
+    const loading = ref(false);
 
     const montantLivraison = ref(adresse.value.frais); // Example: 1000 FCFA delivery fee
 
@@ -18,20 +18,32 @@ import {Link, router} from "@inertiajs/vue3";
         return totalProduits + Number(montantLivraison.value);
     });
     const storeOrders = () => {
+        loading.value = true;
         axios.post(route('orders.store'), {
             name:adresse.value.name,
             phone: adresse.value.phone,
             address: adresse.value.address,
+            frais: montantLivraison.value,
             montant:totalCommande.value,
             items:cart.value
         },).then(response => {
+            localStorage.removeItem('cart');
             router.get(route("orders.success"));
+        }).catch(error => {
+            loading.value = false;
         })
+
+
     }
 
-
+onMounted(() => {
+    if (localStorage.getItem('adresse_livraison')==null) {
+        window.location.href = route('adresse.create');
+    }
+})
 </script>
 <template>
+    <Head title="Détails commandes" />
     <div class="flex flex-col justify-start h-screen relative">
         <div class="">
             <div class="flex justify-start items-center px-2 py-3 border-b bg-white shadow-lg sticky top-0 z-10">
@@ -58,10 +70,6 @@ import {Link, router} from "@inertiajs/vue3";
                             <h4 class="text-sm text-red-600">{{ adresse.phone}}</h4>
                         </div>
                     </Link>
-<!--                    <div class="grid-cols-1 grid p-3 ">-->
-<!--                        <label class="">Information additionnelle</label>-->
-<!--                        <textarea class="textarea textarea-error" rows="4" placeholder="Exp: appelez moi avant la livraison"></textarea>-->
-<!--                    </div>-->
                 </div>
 
             </div>
@@ -84,7 +92,11 @@ import {Link, router} from "@inertiajs/vue3";
                 </div>
             </div>
             <div class="flex justify-center bg-white px-6 py-4">
-                <button @click="storeOrders" class="btn bg-rose-500 hover:bg-rose-600 w-full font-semibold uppercase rounded-xl text-white">Commandez maintenant</button>
+                <button @click="storeOrders" :disabled="loading"
+                        class="btn bg-rose-500 hover:bg-rose-600 disabled:opacity-50
+                         w-full font-semibold uppercase rounded-xl text-white">
+                    <span v-if="loading" class="loading loading-spinner text-secondary"></span>
+                    Commandez maintenant</button>
             </div>
         </div>
 

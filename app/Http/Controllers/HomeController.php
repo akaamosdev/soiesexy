@@ -13,9 +13,11 @@ use PhpOffice\PhpSpreadsheet\Calculation\Category;
 class HomeController extends Controller
 {
    public function home(){
-       $products = Product::with(['images', 'tailles', 'colors'])->latest()->paginate(12);
+       $products = Product::with(['images', 'tailles', 'colors'])->latest()->simplePaginate(50);
+       $categories = Categorie::all();
        return Inertia::render('Home', [
            'products' => $products,
+           'categories' => $categories
        ]);
    }
    public function wishlist(){
@@ -32,9 +34,32 @@ class HomeController extends Controller
            'product' => $product,
        ]);
    }
-    public function filtrer(){
+    public function shop(Request $request){
+//       dd($request->all());
         $data['products'] = Product::query()
-            ->with(['tailles', 'colors', 'images'])->limit(50)->get();
+            ->with(['tailles', 'colors', 'images'])
+            ->when($request->params, function($query, $datas){
+                $query->when($datas['search'], function($query, $search){
+                    $query->where('name', 'like', '%'.$search.'%');
+                })->when($datas['category_id'], function($query, $category){
+                    $query->where('category_id', $category);
+                })->when($datas['min_price'], function($query, $price_min){
+                    $query->where('price','>=', $price_min);
+                })->when($datas['max_price'], function($query, $price_max){
+                    $query->where('price','<=', $price_max);
+                })->when($datas['taille_id'], function($query, $taille){
+                    $query->whereHas('tailles', function($query) use ($taille){
+                        $query->where('taille_id', $taille);
+                    });
+                })->when($datas['orderBy'], function($query, $orderBy){
+                    //dd($orderBy);
+                    $query->orderBy('price', $orderBy);
+                });
+
+            })->when($request->category, function($query, $category){
+                $query->where('category_id', $category);
+            })
+            ->limit(50)->get();
         $data['categories']=Categorie::all();
         $data['tailles']=Taille::all();
         $data['colors']=Color::all();
@@ -50,6 +75,10 @@ class HomeController extends Controller
    public function dashboard(){
 
        return Inertia::render('TableauBord');
+   }
+   public function about()
+   {
+       return Inertia::render('About');
    }
 
 }

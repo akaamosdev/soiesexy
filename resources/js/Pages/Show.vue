@@ -2,7 +2,7 @@
 import {Head, Link} from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {ref, computed, watch, onMounted} from 'vue';
-import {formatPrice, showToast} from "@/helpers.js";
+import {addToCart, formatPrice, getCart, showToast} from "@/helpers.js";
 
 defineOptions({ layout: AppLayout });
 
@@ -30,74 +30,16 @@ const selectImage = (imagePath) => {
     mainImage.value = `/storage/${imagePath}`;
 };
 
-const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
-const carts = ref(Array.isArray(storedCart) ? storedCart : [storedCart]);
+const carts = ref(getCart());
 
 
-const saveCart = () => {
-    localStorage.setItem('cart', JSON.stringify(cart.value));
-};
-
-const addToCart = () => {
-    const item = cart.value[variantId];
-
-    if (item) {
-        item.quantity += quantity.value;
-    } else {
-        cart.value[variantId] = {
-            id: variantId,
-
-            product_id: props.product.id,
-            name: props.product.name,
-            price: product.price,
-            image: props.product.images.length > 0 ? props.product.images[0].image_path : null,
-            quantity: quantity.value,
-        };
-    }
-    saveCart();
+const addCart = () => {
+    addToCart(props.product,selectedTailleId,selectedColorId,quantity,carts);
     showToast("Produit ajouté au panier avec succès");
 };
-//
-// onMounted(() => {
-//     localStorage.removeItem('cart');
-// })
-// --- Wishlist Logic (LocalStorage) ---
-const wishlist = ref(JSON.parse(localStorage.getItem('wishlist')) || {});
-
-const saveWishlist = () => {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist.value));
-};
-
-const isInWishlist = (productId) => {
-    return !!wishlist.value[productId];
-};
-
-const toggleWishlist = (product) => {
-    if (isInWishlist(product.id)) {
-        delete wishlist.value[product.id];
-        alert(`${product.name} removed from wishlist!`);
-    } else {
-        wishlist.value[product.id] = {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.images.length > 0 ? product.images[0].image_path : null,
-        };
-        alert(`${product.name} added to wishlist!`);
-    }
-    saveWishlist();
-};
 
 
-// Watch for changes in localStorage from other tabs/windows
-window.addEventListener('storage', (event) => {
-    if (event.key === 'cart') {
-        cart.value = JSON.parse(event.newValue || '{}');
-    }
-    if (event.key === 'wishlist') {
-        wishlist.value = JSON.parse(event.newValue || '{}');
-    }
-});
+
 const buyNow = () => {
     let cart_c = {
         product_id: props.product.id,
@@ -143,14 +85,11 @@ const buyNow = () => {
 
             </div>
             <div class="">
-                <button @click="addToCart" :disabled="!selectedTailleId || !selectedColorId"
+                <button @click="addCart" :disabled="!selectedTailleId || !selectedColorId"
                         class="bg-red-600 px-4 py-2 disabled:opacity-50 text-white rounded-md">Ajouter au panier</button>
             </div>
         </div>
         <div class="bg-rose-100 py-1 rounded-lg">
-            <div class="wishlist absolute right-0 mr-3 mt-3 px-4 py-3 bg-red-100 rounded-full cursor-pointer" @click="toggleWishlist(product)">
-                <i class="fa-regular fa-heart text-red-500" :class="{'fa-solid': isInWishlist(product.id)}"></i>
-            </div>
             <img :src="mainImage" :alt="product.name" class="h-96 w-full object-cover rounded-es-xl rounded-ee-xl">
 
             <!-- Image Thumbnails -->
@@ -262,9 +201,9 @@ const buyNow = () => {
         <div class="fixed bottom-0 left-0 right-0 bg-white w-full h-16 pb-2 px-4  pt-2 mx-auto
     rounded-l-lg rounded-r-lg max-w-md  rounded-full  z-10">
             <div class="flex justify-between space-x-3">
-                <button class=" basis-1/6 p-3 w-full text-green-600 border-green-600 border  text-center rounded-lg">
+                <a href="https://wa.me/2250798690325/" target="_blank" class=" basis-1/6 p-3 w-full text-green-600 border-green-600 border  text-center rounded-lg">
                     <i class="fa-brands fa-whatsapp"></i>
-                </button>
+                </a>
                 <button class="p-3 w-full text-white disabled:opacity-50 bg-amber-600 text-center rounded-lg"
                       :disabled="!selectedTailleId || !selectedColorId " @click="buyNow" >
                     <i class="fa-solid fa-cart-plus"></i> Achater maintenant

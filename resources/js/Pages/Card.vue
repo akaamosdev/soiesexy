@@ -1,12 +1,11 @@
 <template>
+    <Head title="Mon panier" />
     <div class="h-screen flex flex-col  justify-between">
         <div class="">
             <div class="flex justify-between p-2 border-b bg-white shadow-lg sticky top-0 z-10">
                 <div class="">
                     <h3 class="text-lg font-semibold">Mon panier</h3>
                     <h4> <span class="font-semibold">{{ cartItemCount }}</span> Produits
-                        <span class="font-bold text-xl">.</span> Livré à :
-                        <span class="font-semibold">Domicile</span>
                     </h4>
                 </div>
                 <div class="flex items-center px-0">
@@ -18,10 +17,10 @@
             </div>
             <div class=" px-3 py-3 border-b border-slate-700 mb-3 bg-amber-50">
                 <h3 class="text-xl">Total <span class="font-semibold">{{ Number(cartTotal).toLocaleString('fr-FR') }} F CFA</span></h3>
-                <h2 class="text-green-700">
-                    <i class="fa-solid fa-circle-check"></i>
-                    Livraison gratuite pour votre commande
-                </h2>
+<!--                <h2 class="text-green-700">-->
+<!--                    <i class="fa-solid fa-circle-check"></i>-->
+<!--                    Livraison gratuite pour votre commande-->
+<!--                </h2>-->
             </div>
 
             <div class="grid grid-cols-1 max-h-[75vh] overflow-auto">
@@ -57,17 +56,18 @@
                 </div>
             </div>
         </div>
-        <button class="p-3 mb-20 shadow-2xl bg-amber-600 bg-transparent/52 max-w-md w-full text-center   bottom-0  text-white">
+        <Link :href="route('shop')" class="p-3 mb-20 shadow-2xl bg-amber-600 bg-transparent/52 max-w-md w-full text-center
+          bottom-0  text-white">
             Ajouter d'autres articles
-        </button>
+        </Link>
     </div>
 
 </template>
 
 <script setup>
-    import {Link} from "@inertiajs/vue3";
+import {Head, Link} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
-    import { ref, computed, watch } from 'vue';
+    import {ref, computed, watch, onMounted} from 'vue';
     import {getCart} from "@/helpers.js";
 
     defineOptions({ layout:AppLayout });
@@ -98,18 +98,11 @@
     };
 
     const removeItem = (id) => {
-        if (confirm('Are you sure you want to remove this item from your cart?')) {
-            delete cart.value[id];
-            saveCart();
-        }
+       delete cart.value.splice(id, 1);
+       localStorage.setItem('cart', JSON.stringify(cart.value));
     };
 
-    // Watch for changes in localStorage from other tabs/windows
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'cart') {
-            cart.value = JSON.parse(event.newValue || '{}');
-        }
-    });
+
 </script>
 
 <style scoped>

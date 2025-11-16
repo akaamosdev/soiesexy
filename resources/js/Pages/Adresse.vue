@@ -1,4 +1,5 @@
 <template>
+    <Head title="Votre adresse de livraion" />
     <div class="relative h-screen">
         <div class="flex justify-start items-center px-2 py-3 border-b bg-white shadow-lg sticky top-0 z-10">
             <Link :href="route('home')" class="px-2 ">
@@ -52,7 +53,7 @@
 </template>
 
 <script setup>
-import {Link, router} from "@inertiajs/vue3";
+import {Head, Link, router} from "@inertiajs/vue3";
     import AppLayout from "@/Layouts/AppLayout.vue";
     import {reactive, ref} from "vue";
     import {getAddressLivraison} from "@/helpers.js";
@@ -61,7 +62,7 @@ import {Link, router} from "@inertiajs/vue3";
     const last_adresse= ref(getAddressLivraison());
     const form_delivery= reactive({
         name:last_adresse.value.name,
-        phone:last_adresse.value.phone,
+        phone:last_adresse.value.phone??"+225",
         address:last_adresse.value.address,
         frais:last_adresse.value.frais??1500,
     })

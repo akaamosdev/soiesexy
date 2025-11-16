@@ -13,7 +13,7 @@ import {Head, Link} from "@inertiajs/vue3";
                     <i class="fa-solid fa-chevron-left"></i>
                 </Link>
                 <div class="flex justify-start w-full ml-2">
-                    <h3 class="font-bold text-center ">Tableau de bord</h3>
+                    <h3 class="font-bold text-center ">Qui sommes nous </h3>
                 </div>
                 <a href="" class="px-3">
                     <i class="fa-solid fa-cart-shopping  text-md"></i>

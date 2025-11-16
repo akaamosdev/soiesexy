@@ -1,4 +1,5 @@
 <template>
+    <Head title="Succès commande "/>
     <div class="relative h-screen">
         <div class="flex justify-start items-center px-2 py-3 border-b bg-white shadow-lg sticky top-0 z-10">
             <Link :href="route('home')" class="px-2 ">
@@ -24,7 +25,7 @@
 </template>
 
 <script setup>
-import {Link} from "@inertiajs/vue3";
+import {Head, Link} from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {reactive, ref} from "vue";
 import {getAddressLivraison} from "@/helpers.js";

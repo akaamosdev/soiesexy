@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\MailSendJob;
+use App\Mail\SendMail;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -34,6 +36,7 @@ class OrderController extends Controller
             "name"=>$request->get('name'),
             "phone"=>$request->get('phone'),
             "address"=>$request->get('address'),
+            "frais"=>$request->get('frais'),
         ]);
         $order=Order::query()->create([
             "address_id"=>$addr->id,
@@ -52,6 +55,7 @@ class OrderController extends Controller
                 "montant"=>$item['price']*$item['quantity'],
             ]);
         }
+        MailSendJob::dispatch($order);
         return response()->json(['statut'=>true,"message"=>"Nous avons bien reçu votre commande ! Merci pour la confiance"]);
     }
 

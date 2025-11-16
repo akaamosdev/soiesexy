@@ -25,9 +25,12 @@ class CategorieController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
+            'image' => 'required',
         ]);
-
-        Categorie::create($request->only('name'));
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+        }
+        Categorie::create(['name'=>$request->name,'image'=>$path]);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }

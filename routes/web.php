@@ -34,11 +34,12 @@ Route::get('/',[\App\Http\Controllers\HomeController::class,'home'])->name('home
 Route::get('/wishlist',[\App\Http\Controllers\HomeController::class,'wishlist'])->name('wishlist');
 Route::get('/cart',[\App\Http\Controllers\HomeController::class,'card'])->name('card');
 Route::get('/produit/{product:slug}',[\App\Http\Controllers\HomeController::class,'show'])->name('show');
-Route::get('/trouver-votre-lingerie',[\App\Http\Controllers\HomeController::class,'filtrer'])->name('filtrer');
+Route::get('/trouver-votre-lingerie',[\App\Http\Controllers\HomeController::class,'shop'])->name('shop');
 Route::get('/mon-adresse-de-livraison',[\App\Http\Controllers\HomeController::class,'adresse'])
     ->name('adresse.create');
 Route::get('/checkout',[\App\Http\Controllers\HomeController::class,'checkout'])->name('checkout');
 Route::get('/espace-client',[\App\Http\Controllers\HomeController::class,'dashboard'])->name('dashboard');
+Route::get('/a-propos-nous',[\App\Http\Controllers\HomeController::class,'about'])->name('about');
 //route orders
 Route::prefix("orders")->group(function () {
     Route::get('/',[\App\Http\Controllers\OrderController::class,'index'])->name('orders');
