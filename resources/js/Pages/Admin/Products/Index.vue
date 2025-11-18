@@ -1,6 +1,7 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import {formatPrice} from "../../../helpers.js";
 
 defineProps({
     products: Object,
@@ -51,10 +52,10 @@ const destroy = (id) => {
                                     <span v-else class="text-gray-400">No Image</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ product.name }}</div>
+                                    <div class="text-sm text-gray-900">{{ product.name.substring(0,25) }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ product.price }}</div>
+                                    <div class="text-sm text-gray-900">{{ formatPrice(product.price) }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap ">
                                     <div class="flex">

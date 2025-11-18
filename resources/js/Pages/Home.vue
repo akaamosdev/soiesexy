@@ -1,7 +1,7 @@
 <template>
     <Head title="Lingerie féminine séduisante, élégante et irrésistible en côte d'ivoire" />
     <div class="">
-        <div class="top-0 left-0 flex sticky justify-center items-center w-full">
+        <div class="top-0 left-0 flex sticky justify-center z-10 items-center w-full">
             <div class="flex justify-between p-2 border-b w-full bg-slate-100">
                 <div class="basis-4/6 w-full flex items-center">
                     <!--                <a href="" class="px-2">-->
@@ -10,7 +10,7 @@
                     <img src="/assets/img/logo_red.png" alt="Logo SOIE Sexy" class="h-8">
                     <a href="" class="text-lg uppercase ml-2 font-bold">Soie Sexy</a>
                 </div>
-                <div class="basis-2/6 flex justify-end text-right space-x-6">
+                <div class="basis-2/6 flex justify-end text-right space-x-6 items-center">
 
                     <Link :href="route('card')" class="relative">
                         <i class="fa-solid fa-cart-shopping text-md"></i>
@@ -20,6 +20,10 @@
                         <i class="fa-regular fa-heart text-md"></i>
                         <span v-if="wishlistItemCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{{ wishlistItemCount }}</span>
                     </Link>
+                    <a href="https://wa.me/2250798690325" target="_blank"
+                       class="items-center px-2 py-1 bg-green-600 text-white rounded-full shadow hover:bg-green-700">
+                        <i class="fa-brands fa-whatsapp "></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -37,13 +41,13 @@
                 <h3 class="text-lg font-semibold">{{ top_prod.name }}</h3>
                 <div class="flex justify-between mt-2">
                     <div class="">
-                        <h4 class="text-lg font-semibold">Promo du jour</h4>
+                        <h4 class="text-lg font-semibold">Promo</h4>
                         <h3 class="font-bold">{{ formatPrice(top_prod.price) }}F</h3>
                     </div>
                     <div class="">
                         <h4 class="text-lg font-semibold">Taille</h4>
                         <div class="flex text-sm items-center justify-between text-slate-950 space-x-2">
-                            <div v-for="pro in top_prod.tailles" class="w-10 p-2 text-center h-10 text-slate-950 rounded-full bg-white">
+                            <div v-for="pro in top_prod.tailles.slice(0,2)" class="w-10 p-2 text-center h-10 text-slate-950 rounded-full bg-white">
                                 {{ pro.name }}
                             </div>
                         </div>

@@ -13,8 +13,12 @@ use PhpOffice\PhpSpreadsheet\Calculation\Category;
 class HomeController extends Controller
 {
    public function home(){
-       $products = Product::with(['images', 'tailles', 'colors'])->latest()->simplePaginate(50);
-       $categories = Categorie::all();
+       $products = Product::with(['images', 'tailles', 'colors'])->inRandomOrder()
+           ->simplePaginate(50);
+       $categories = Categorie::query()->has('products')
+           ->withCount('products')
+           ->orderBy('products_count', 'DESC')
+           ->get();
        return Inertia::render('Home', [
            'products' => $products,
            'categories' => $categories
