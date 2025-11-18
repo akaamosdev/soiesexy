@@ -70,6 +70,15 @@
     </head>
     <body class="bg-slate-900">
         @inertia
+        <!-- Floating WhatsApp button -->
+        <a href="https://wa.me/+2250798690325?&text=Est-ce que je peux discuter avec quelqu'un ?" target="_blank" rel="noopener"
+           class="fixed right-2 bottom-20 z-50 shadow-lg rounded-full p-4 flex items-center gap-2"
+           style="background-color:#25D366;">
+            <!-- Icone SVG WhatsApp -->
+            <i class="fa-brands fa-whatsapp fa-1x text-white"></i>
+            <span class="hidden sm:inline text-white font-medium">Rejoindre</span>
+        </a>
+
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"
                 integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
         @stack('scripts')

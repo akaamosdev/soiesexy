@@ -13,15 +13,17 @@ use PhpOffice\PhpSpreadsheet\Calculation\Category;
 class HomeController extends Controller
 {
    public function home(){
-       $products = Product::with(['images', 'tailles', 'colors'])->inRandomOrder()
-           ->simplePaginate(50);
+       $products = Product::with(['images', 'tailles', 'colors'])->inRandomOrder()->limit(30)->get();
+//           ->simplePaginate(50);
+       $top_prod=Product::with(['images', 'tailles', 'colors'])->find(54);
        $categories = Categorie::query()->has('products')
            ->withCount('products')
            ->orderBy('products_count', 'DESC')
            ->get();
        return Inertia::render('Home', [
            'products' => $products,
-           'categories' => $categories
+           'categories' => $categories,
+           'top_prod' => $top_prod,
        ]);
    }
    public function wishlist(){

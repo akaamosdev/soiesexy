@@ -20,10 +20,6 @@
                         <i class="fa-regular fa-heart text-md"></i>
                         <span v-if="wishlistItemCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{{ wishlistItemCount }}</span>
                     </Link>
-                    <a href="https://wa.me/2250798690325" target="_blank"
-                       class="items-center px-2 py-1 bg-green-600 text-white rounded-full shadow hover:bg-green-700">
-                        <i class="fa-brands fa-whatsapp "></i>
-                    </a>
                 </div>
             </div>
         </div>
@@ -89,18 +85,18 @@
             <h3 class="p-2 text-lg font-semibold">Nouveaux Arrivages</h3>
         </div>
         <div class="grid grid-cols-2 p-2 gap-3">
-            <ItemProduct v-for="product in products.data" :key="product.id" :product="product" />
+            <ItemProduct v-for="product in products" :key="product.id" :product="product" />
         </div>
         <!-- Pagination -->
-        <div class="mt-4 flex justify-between p-2">
-            <Link v-if="products.prev_page_url" :href="products.prev_page_url" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-                Precedent
-            </Link>
-            <div v-else></div>
-            <Link v-if="products.next_page_url" :href="products.next_page_url" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
-                Suivant
-            </Link>
-        </div>
+<!--        <div class="mt-4 flex justify-between p-2">-->
+<!--            <Link v-if="products.prev_page_url" :href="products.prev_page_url" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">-->
+<!--                Precedent-->
+<!--            </Link>-->
+<!--            <div v-else></div>-->
+<!--            <Link v-if="products.next_page_url" :href="products.next_page_url" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">-->
+<!--                Suivant-->
+<!--            </Link>-->
+<!--        </div>-->
 
     </div>
 
@@ -118,12 +114,9 @@ defineOptions({layout : AppLayout})
 const prosps = defineProps({
     products: Object,
     categories: Array,
+    top_prod:Object,
 });
 
-const top_prod = computed(() => {
-   return  prosps.products.data[0];
-})
-// Cart and Wishlist counts
 const cart = ref(getCart());
 const wishlist = ref(getWishlist());
 
