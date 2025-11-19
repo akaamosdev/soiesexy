@@ -16,7 +16,7 @@
             </div>
             <div class=" w-full text-center mt-10">
                 <p class="mb-4 text-lg"><strong class="text-rose-600 font-semibold">Félicitation</strong>, nous avons bien reçu votre commande, vous serez contactez pour la livraison</p>
-                 <Link :href="route('home')" class="px-3 py-2 border-rose-600 rounded text-rose-700 border mt-3">Faire une autre commande</Link>
+                 <a :href="route('home')" class="px-3 py-2 border-rose-600 rounded text-rose-700 border mt-3">Faire une autre commande</a>
             </div>
 
         </div>

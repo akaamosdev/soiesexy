@@ -28,7 +28,8 @@ import {Head, Link, router} from "@inertiajs/vue3";
             items:cart.value
         },).then(response => {
             localStorage.removeItem('cart');
-            router.get(route("orders.success"));
+            window.location.href = route("orders.success");
+            router.get();
         }).catch(error => {
             loading.value = false;
         })

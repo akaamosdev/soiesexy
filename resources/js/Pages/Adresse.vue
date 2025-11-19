@@ -68,7 +68,7 @@ import {Head, Link, router} from "@inertiajs/vue3";
     })
     const storeAdresse = () => {
         localStorage.setItem("adresse_livraison",JSON.stringify(form_delivery));
-        router.get(route("checkout"));
+        window.location.href = route('checkout');
     }
 </script>
 

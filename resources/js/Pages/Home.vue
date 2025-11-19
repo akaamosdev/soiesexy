@@ -106,7 +106,7 @@
 import ItemProduct from "@/Layouts/ItemProduct.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {Head, Link} from '@inertiajs/vue3';
-import { ref, computed, watch } from 'vue';
+import {ref, computed, watch, onMounted} from 'vue';
 import {getCart, getWishlist, formatPrice} from "@/helpers.js"; // Import ref, computed, watch
 
 defineOptions({layout : AppLayout})
@@ -127,6 +127,7 @@ const cartItemCount = computed(() => {
 const wishlistItemCount = computed(() => {
     return wishlist.value.length;
 });
+
 </script>
 
 <style scoped>
