@@ -34,6 +34,10 @@ const carts = ref(getCart());
 
 
 const addCart = () => {
+    if (!selectedTailleId.value || !selectedColorId.value) {
+        showToast("Veuillez selectionner votre taille une couleur ",false);
+        return;
+    }
     addToCart(props.product,selectedTailleId,selectedColorId,quantity,carts);
     showToast("Produit ajouté au panier avec succès");
 };
@@ -41,6 +45,10 @@ const addCart = () => {
 
 
 const buyNow = () => {
+    if (!selectedTailleId.value || !selectedColorId.value) {
+        showToast("Veuillez selectionner votre taille une couleur ",false);
+        return;
+    }
     let cart_c = {
         product_id: props.product.id,
         taille_id: selectedTailleId,
@@ -85,8 +93,8 @@ const buyNow = () => {
 
             </div>
             <div class="">
-                <button @click="addCart" :disabled="!selectedTailleId || !selectedColorId"
-                        class="bg-red-600 px-4 py-2 disabled:opacity-50 text-white rounded-md">Ajouter au panier</button>
+                <button @click="addCart"
+                        class="bg-red-600 px-4 py-2 text-white rounded-md">Ajouter au panier</button>
             </div>
         </div>
         <div class="bg-rose-100 py-1 rounded-lg">
@@ -204,8 +212,7 @@ const buyNow = () => {
                 <a href="https://wa.me/2250798690325/" target="_blank" class=" basis-1/6 p-3 w-full text-green-600 border-green-600 border  text-center rounded-lg">
                     <i class="fa-brands fa-whatsapp"></i>
                 </a>
-                <button class="p-3 w-full text-white disabled:opacity-50 bg-amber-600 text-center rounded-lg"
-                      :disabled="!selectedTailleId || !selectedColorId " @click="buyNow" >
+                <button class="p-3 w-full text-white bg-amber-600 text-center rounded-lg" @click="buyNow" >
                     <i class="fa-solid fa-cart-plus"></i> Achater maintenant
                 </button>
             </div>

@@ -101,7 +101,7 @@ const orderByPrice = () => {
             <hr>
             <div class="flex mt-2 w-full justify-center space-x-2 font-semibold">
                 <button class="px-3 py-2 bg-white rounded-full w-full" @click="(()=>form.reset())">Effacer</button>
-                <button class="px-3 py-3 bg-amber-900 text-white w-full rounded-full " @click="">Appliquer</button>
+                <button class="px-3 py-3 bg-amber-900 text-white w-full rounded-full " @click="(()=>isFilter=false)">Appliquer</button>
             </div>
         </div>
         <div class="mb-4"></div>

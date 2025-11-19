@@ -8,15 +8,17 @@ const carts = ref(Array.isArray(storedCart) ? storedCart : [storedCart]);
 const state = reactive({
     visible: false,
     message: '',
+    type:true,
     timeoutMs: 3000
 });
 
 let hideTimer = null;
 
-export function showToast(message, durationMs = 3000) {
+export function showToast(message,type=true, durationMs = 3000) {
     state.message = message;
     state.timeoutMs = durationMs;
     state.visible = true;
+    state.type = type;
 
     if (hideTimer) clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {

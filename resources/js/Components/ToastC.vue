@@ -3,8 +3,10 @@
     <div v-if="toast.visible" class="fixed inset-0 t flex items-start justify-center pointer-events-none z-50 p-4">
         <div class="max-w-md w-full mx-auto z-10 bg-transparent pointer-events-auto">
             <div class="rounded-md w-full bg-slate-50 overflow-hidden">
-                <div class="flex justify-between items-center bg-green-600 text-white px-3 py-2">
-                    <p class="text-sm font-medium">Succès</p>
+                <div class="flex justify-between items-center  text-white px-3 py-2"
+                :class="{'bg-green-600':toast.type, 'bg-red-600':!toast.type,}">
+                    <p class="text-sm font-medium" v-if="toast.type">Succès</p>
+                    <p class="text-sm font-medium" v-else>Erreur</p>
                     <button @click="hide" class="text-white text-xl leading-none">&times;</button>
                 </div>
 
